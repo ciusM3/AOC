@@ -99,10 +99,10 @@ int distance(NS* boxes[1000], edgeStruct* edges, int boxesSize)     // calculate
 
 void sortEdgesNewIter(edgeStruct* edges, int noEdges)
 {
-	sort(edges, edges + noEdges, [](const edgeStruct& a, const edgeStruct& b) {return a.cost < b.cost; }); 
+	sort(edges, edges + noEdges, [](const edgeStruct& a, const edgeStruct& b) {return a.cost < b.cost; });
 }
 
-void kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes, int noConnections)
+long long int kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes, int noConnections)
 {
 	int count = 1;
 
@@ -135,9 +135,12 @@ void kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes, int n
 	}
 
 	for (int i = 0; i < noBoxes; i++)
-		cout << sets[i]->size << " ";
+		if (sets[i]->size != 0)
+			cout << sets[i]->size << " ";
+		else break;
 
-	//return answer;
+	long long int answer = sets[0]->size * sets[1]->size * sets[2]->size;
+	return answer;
 }
 
 void part1()
@@ -148,7 +151,7 @@ void part1()
 	int indexBoxes = 0;
 	char line[100];
 
-	while (input.getline(line,100))
+	while (input.getline(line, 100))
 	{
 		boxesCoords[indexBoxes] = createNode(indexBoxes);
 		makeSet(boxesCoords[indexBoxes]);
@@ -169,11 +172,9 @@ void part1()
 		cout << edges[i].firstNode << "->" << edges[i].secondNode << " with cost: " << edges[i].cost << endl;
 	}*/
 
+	long long int answer = kruskal(edges, boxesCoords, noEdges, indexBoxes, 1000);
 
-	kruskal(edges, boxesCoords, noEdges, indexBoxes, 1000);
-	//long long int answer = kruskal(edges, boxesCoords, noEdges, indexBoxes, 10);
-
-	//cout << endl << "answer: " << answer;
+	cout << endl << "answer: " << answer;
 }
 
 int main()
