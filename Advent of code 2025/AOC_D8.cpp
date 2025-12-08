@@ -20,6 +20,7 @@ typedef struct NS
 	int key;
 	struct NS* parent;
 	int rank;
+	int size;
 	int x;
 	int y;
 	int z;
@@ -32,6 +33,7 @@ NS* createNode(int val)
 	x->key = val;
 	x->parent = NULL;
 	x->rank = 0;
+	x->size = 1;
 	return x;
 }
 
@@ -51,9 +53,16 @@ NS* findSet(NS* x)           // finds set representative
 void link(NS* x, NS* y)        // the function that helps unite sets
 {
 	if (x->rank > y->rank)
+	{
+		x->size += y->size;
+		y->size = 0;
 		y->parent = x;
+	}
 	else
 	{
+		y->size += x->size;
+		x->size = 0;
+
 		x->parent = y;
 		if (x->rank == y->rank)
 			y->rank++;
@@ -77,7 +86,7 @@ int distance(NS* boxes[1000], edgeStruct* edges, int boxesSize)     // calculate
 			long long int xAbs = abs(boxes[i]->x - boxes[j]->x);
 			long long int yAbs = abs(boxes[i]->y - boxes[j]->y);
 			long long int zAbs = abs(boxes[i]->z - boxes[j]->z);
-			distance = pow(xAbs, 2) + pow(yAbs, 2) + pow(zAbs, 2);
+			distance = xAbs * xAbs + yAbs * yAbs + zAbs * zAbs;
 
 			edges[edgesIndex].firstNode = i;
 			edges[edgesIndex].secondNode = j;
@@ -99,69 +108,39 @@ void sortEdges(edgeStruct* edges, int noEdges)
 			}
 }
 
-void kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes)
+long long int kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes)
 {
-	int circuits[1000];
+	int count = 1;
 
-	for (int i = 0; i < noBoxes; i++)  // in the beginning every box is its own circuit
-		circuits[i] = 1;
-
-	int count = 0;
-
-	for (int i = 0; i < noEdges && count<10; i++)
+	for (int i = 0; i < noEdges && count < 10; i++)
 	{
 		int u = edges[i].firstNode;
 		int v = edges[i].secondNode;
 
 		if (findSet(sets[u]) != findSet(sets[v]))
 		{
-			int createdCircuitSize = circuits[findSet(sets[u])->key] + circuits[findSet(sets[v])->key];
-
-			circuits[findSet(sets[u])->key] = 0;
-			circuits[findSet(sets[v])->key] = 0;
-
 			unionS(sets[u], sets[v]);   // two circuits are linked
 
-			NS* circuitRepresentative = findSet(sets[u]);
-
-			circuits[circuitRepresentative->key] = createdCircuitSize;
 			count++;
 		}
 	}
-	
+
 	for (int i = 0; i < noBoxes - 1; i++)
 		for (int j = i + 1; j < noBoxes; j++)
-			if (circuits[i] < circuits[j])
+			if (sets[i]->size < sets[j]->size)
 			{
-				int aux = circuits[i];
-				circuits[i] = circuits[j];
-				circuits[j] = aux;
+				NS* aux = sets[i];
+				sets[i] = sets[j];
+				sets[j] = aux;
 			}
 
 	for (int i = 0; i < noBoxes; i++)
-		cout << circuits[i] << " ";
+		cout << sets[i]->size << " ";
 
-	/*int max1, max2, max3;
-	max1 = max2 = max3 = circuits[0];
-	for (int i = 0; i < noBoxes; i++)
-	{
-		if (circuits[i] > max1) {
-			max3 = max2;
-			max2 = max1;
-			max1 = circuits[i];
-		}
-		else if (circuits[i] > max2) {
-			max3 = max2;
-			max2 = circuits[i];
-		}
-		else if (circuits[i] > max3)
-			max3 = circuits[i];
-	}*/
+	long long int answer;
+	answer = sets[0]->size * sets[1]->size * sets[2]->size;
 
-	/*long long int answer;
-	answer = max1 * max2 * max3;
-
-	return answer;*/
+	return answer;
 }
 
 void part1()
@@ -195,11 +174,9 @@ void part1()
 		cout << edges[i].firstNode << "->" << edges[i].secondNode << " with cost: " << edges[i].cost << endl;
 	}
 
-	kruskal(edges, boxesCoords, noEdges, indexBoxes);
+	long long int answer = kruskal(edges, boxesCoords, noEdges, indexBoxes);
 
-	//long long int answer = kruskal(edges, boxesCoords, noEdges, indexBoxes);
-
-	//cout << endl << "answer: " << answer;
+	cout << endl << "answer: " << answer;
 }
 
 int main()
