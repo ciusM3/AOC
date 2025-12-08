@@ -143,6 +143,34 @@ long long int kruskal(edgeStruct edges[], NS* sets[1000], int noEdges, int noBox
 	return answer;
 }
 
+long long int kruskalP2(edgeStruct edges[], NS* sets[1000], int noEdges, int noBoxes)
+{
+	long long int answer;
+	long long int x1, x2;
+
+	sortEdgesNewIter(edges, noEdges);
+
+	for (int i = 0; i < noEdges; i++)
+	{
+		int u = edges[i].firstNode;
+		int v = edges[i].secondNode;
+
+		if (findSet(sets[u]) != findSet(sets[v]))
+		{
+			unionS(sets[u], sets[v]);   // two circuits are linked
+
+			x1 = sets[u]->x;
+			x2 = sets[v]->x;
+		}
+	}
+
+	cout << "last two x " << x1 << " " << x2 << endl;
+
+	answer = x1 * x2;
+
+	return answer;
+}
+
 void part1()
 {
 	ifstream input("input.txt");
@@ -177,7 +205,44 @@ void part1()
 	cout << endl << "answer: " << answer;
 }
 
+void part2()
+{
+	ifstream input("input.txt");
+	NS* boxesCoords[1000];
+
+	int indexBoxes = 0;
+	char line[100];
+
+	while (input.getline(line, 100))
+	{
+		boxesCoords[indexBoxes] = createNode(indexBoxes);
+		makeSet(boxesCoords[indexBoxes]);
+		sscanf(line, "%d,%d,%d", &boxesCoords[indexBoxes]->x, &boxesCoords[indexBoxes]->y, &boxesCoords[indexBoxes]->z);
+		indexBoxes++;
+	}
+
+	for (int i = 0; i < indexBoxes; i++)
+		cout << i << ": " << boxesCoords[i]->x << " " << boxesCoords[i]->y << " " << boxesCoords[i]->z << endl;
+
+	cout << endl;
+
+	edgeStruct* edges = (edgeStruct*)malloc(2000000 * sizeof(edgeStruct));
+	int noEdges = distance(boxesCoords, edges, indexBoxes);
+
+	/*for (int i = 0; i < noEdges; i++)
+	{
+		cout << edges[i].firstNode << "->" << edges[i].secondNode << " with cost: " << edges[i].cost << endl;
+	}*/
+
+	long long int answer = kruskalP2(edges, boxesCoords, noEdges, indexBoxes);
+
+	cout << endl << "answer: " << answer;
+}
+
 int main()
 {
-	part1();
+	part2();
 }
+//6083499488
+//1788532192
+//9223372036854775807
