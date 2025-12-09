@@ -159,14 +159,14 @@ long long int kruskalP2(edgeStruct edges[], NS* sets[1000], int noEdges, int noB
 		{
 			unionS(sets[u], sets[v]);   // two circuits are linked
 
+			answer = (long long int)(sets[u]->x) * (long long int)(sets[v]->x);
+
 			x1 = sets[u]->x;
 			x2 = sets[v]->x;
 		}
 	}
 
 	cout << "last two x " << x1 << " " << x2 << endl;
-
-	answer = x1 * x2;
 
 	return answer;
 }
