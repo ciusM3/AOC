@@ -366,3 +366,4 @@ Advent of code 2025.sln
 .gitattributes
 Advent of code 2025.vcxproj
 Advent of code 2025.vcxproj.filters
+*.txt
