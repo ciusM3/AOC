@@ -39,13 +39,13 @@ void fillExterior(char map[300][300], int mapSize)
 	// flood fill from all sides
 	for (int i = 0; i < mapSize; i++)
 	{
-		if (map[0][i] == '.') 
+		if (map[0][i] == '.')
 			dfsFillExterior(map, mapSize, 0, i);
-		if (map[mapSize - 1][i] == '.') 
+		if (map[mapSize - 1][i] == '.')
 			dfsFillExterior(map, mapSize, mapSize - 1, i);
-		if (map[i][0] == '.') 
+		if (map[i][0] == '.')
 			dfsFillExterior(map, mapSize, i, 0);
-		if (map[i][mapSize - 1] == '.') 
+		if (map[i][mapSize - 1] == '.')
 			dfsFillExterior(map, mapSize, i, mapSize - 1);
 	}
 }
@@ -55,7 +55,7 @@ void sortXValues(redCoords* redPositions, int noPositions)
 	sort(redPositions, redPositions + noPositions, [](const redCoords& a, const redCoords& b) {return a.x < b.x; });
 }
 
-void sortYValues(redCoords* redPositions, int noPositions)
+void sortYValues(redCoords * redPositions, int noPositions)
 {
 	sort(redPositions, redPositions + noPositions, [](const redCoords& a, const redCoords& b) {return a.y < b.y; });
 }
@@ -261,8 +261,6 @@ void part2()
 
 	long long int maxSurfArea = -1;
 
-	int x1, x2, y1, y2;
-
 	for (int i = 0; i < indexPos - 1; i++)
 		for (int j = i + 1; j < indexPos; j++)
 		{
@@ -283,7 +281,7 @@ void part2()
 			for (int i = smallestX; i <= biggestX && rectangleInside != 0; i++)
 				if (map[i][A.y] == 'O')
 					rectangleInside = 0;
-			
+
 			// edge C->D
 			smallestX = MIN(C.x, D.x);
 			biggestX = MAX(C.x, D.x);
@@ -307,20 +305,21 @@ void part2()
 
 			if (rectangleInside == 0)
 				continue;
-			
+
 			long long int xDif = abs(A.xOg - C.xOg) + 1;
 			long long int yDif = abs(A.yOg - C.yOg) + 1;
 
 			long long int surfArea = xDif * yDif;
 
 			if (surfArea > maxSurfArea)
-					maxSurfArea = surfArea;
+				maxSurfArea = surfArea;
 		}
-
+	
 	cout << endl << "answer: " << maxSurfArea;
+
 }
 
 int main()
 {
-	part2();
+	part1();
 }
