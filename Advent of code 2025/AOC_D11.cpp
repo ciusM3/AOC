@@ -155,13 +155,16 @@ void part2()
 	}
 
 	node* svr = nullptr;
+	node* dac = nullptr;
+	node* fft = nullptr;
 	for (node* i : nodes)
 	{
 		if (i->name == "svr")
-		{
 			svr = i;
-			break;
-		}
+		if (i->name == "dac")
+			dac = i;
+		if (i->name == "fft")
+			fft = i;
 	}
 
 	for (node* i : nodes)
