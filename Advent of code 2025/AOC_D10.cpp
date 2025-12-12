@@ -17,7 +17,7 @@ typedef struct machine
 	vector<int> joltage;
 };
 
-void buttonPress(vector<int> &lights, vector<int> button)
+void buttonPress(vector<int>& lights, vector<int> button)
 {
 	for (int switchState : button)
 	{
@@ -66,47 +66,6 @@ int bfs(vector<int> diagram, vector<int> lights, vector<vector<int>> buttons)
 	return -1; // not found
 }
 
-int bfsP2(vector<int> joltage, vector<vector<int>> buttons)
-{
-	queue<vector<int>> queue;
-	set<vector<int>> visited;
-
-	queue.push(lights);
-	visited.insert(lights);
-
-	int level = 0;
-
-	while (!queue.empty())
-	{
-		int noElementsInLevel = queue.size();
-
-		while (noElementsInLevel)
-		{
-			vector<int> current = queue.front();
-			queue.pop();
-
-			if (current == joltage)
-				return level;
-
-			for (vector<int> button : buttons)
-			{
-				vector<int> newLights = current;
-				buttonPress(newLights, button);
-
-				if (visited.find(newLights) == visited.end())
-				{
-					visited.insert(newLights);
-					queue.push(newLights);
-				}
-			}
-			noElementsInLevel--;
-		}
-		level++;
-	}
-
-	return -1; // not found
-}
-
 void part1()
 {
 	ifstream input("input.txt");
@@ -120,7 +79,7 @@ void part1()
 
 		char* p = strtok(line, " ");
 
-		while (p)                               // nest god reading
+		while (p)
 		{
 			if (p[0] == '[')
 			{
@@ -165,7 +124,7 @@ void part1()
 		answer += bfs(currentMachine.diagram, currentMachine.lights, currentMachine.buttons);
 
 	}
-	cout <<endl<< "answer: " << answer;
+	cout << endl << "answer: " << answer;
 }
 
 int main()
