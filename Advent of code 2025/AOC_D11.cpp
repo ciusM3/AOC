@@ -12,6 +12,7 @@ typedef struct node
 	string name;
 	vector<node*> neighbours;
 	int isVisited;
+	int memoIndex;   // used for part 2, resolving with memoization
 };
 
 int dfs(node* currentNode, node* out)
@@ -32,6 +33,51 @@ int dfs(node* currentNode, node* out)
 	currentNode->isVisited = 0;
 
 	return noPaths;
+}
+
+long long int dfsMemoized(node* currentNode, node* out, vector<int> &memo)
+{
+	if (memo[currentNode->memoIndex] != -1)
+		return memo[currentNode->memoIndex];
+
+	if (currentNode == out)
+		return 1;
+
+	currentNode->isVisited = 1;
+
+	int noPaths = 0;
+
+	for (node* i : currentNode->neighbours)
+	{
+		if (i->isVisited == 0)
+			noPaths += dfsMemoized(i, out, memo);
+	}
+
+	if (memo[currentNode->memoIndex] == -1)     // store the number of paths to get to this node
+		memo[currentNode->memoIndex] = noPaths;  
+
+	currentNode->isVisited = 0;
+
+	return noPaths;
+}
+
+void resetVisited(vector<node*> &nodes)
+{
+	for (node* i : nodes)
+	{
+		i->isVisited = 0;
+	}
+}
+
+int searchPath(node* start, node* finish, vector<node*> &nodes, vector<int> &memo)
+{
+	resetVisited(nodes);
+
+	for (int i = 0; i < memo.size(); i++) {
+		memo[i] = -1;
+	}
+
+	return dfsMemoized(start, finish, memo);
 }
 
 void part1()
@@ -84,6 +130,7 @@ void part1()
 		}
 	}
 
+	// solution
 	node* you= nullptr;
 	for (node* i : nodes)
 	{
@@ -94,10 +141,7 @@ void part1()
 		}
 	}
 
-	for (node* i : nodes)
-	{
-		i->isVisited = 0;
-	}
+	resetVisited(nodes);
 
 	int count = dfs(you, out);
 
@@ -125,6 +169,7 @@ void part2()
 		aux->name = string(p);
 		aux->neighbours = {};
 		aux->isVisited = 0;
+		aux->memoIndex = nodes.size();
 		nodes.push_back(aux);
 	}
 
@@ -133,6 +178,7 @@ void part2()
 	out->name = "out";
 	out->isVisited = 0;
 	out->neighbours = {};
+	out->memoIndex = nodes.size();
 	nodes.push_back(out);
 
 	// connect the graph
@@ -154,6 +200,14 @@ void part2()
 		}
 	}
 
+	// solution
+
+	vector<int> memo;
+	for (node* i : nodes)
+		memo.push_back(-1);
+
+
+
 	node* svr = nullptr;
 	node* dac = nullptr;
 	node* fft = nullptr;
@@ -167,17 +221,15 @@ void part2()
 			fft = i;
 	}
 
-	for (node* i : nodes)
-	{
-		i->isVisited = 0;
-	}
+	long long int svrToFft = searchPath(svr, fft, nodes, memo);
+	long long int fftToDac = searchPath(fft, dac, nodes, memo);
+	long long int dacToOut = searchPath(dac, out, nodes, memo);
+	long long int answer = svrToFft * fftToDac * dacToOut;
 
-	int count = dfs(svr, out);
-
-	cout << "answer: " << count;
+	cout << "answer: " << answer;
 }
 
 int main()
 {
-	part1();
+	part2();
 }
